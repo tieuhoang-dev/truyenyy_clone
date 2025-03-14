@@ -4,9 +4,8 @@ import { Bell, BookOpen, Mail, Search, Home } from "lucide-react";
 
 const Header = () => {
     return (
-        <header className="bg-cyan shadow-md">
-            {/* Top Bar */}
-            <div className="flex items-center justify-between px-6 py-3">
+        <header className="bg-blue shadow-md">
+            <div className="flex items-center justify-between px-6 py-3 bg-[url('/bg.jpg')] " >
                 {/* Logo & Website Name */}
                 <div className="flex items-center">
                     <Link href="/logo">
@@ -22,7 +21,7 @@ const Header = () => {
                     <input
                         type="text"
                         placeholder="Tìm tên truyện, tác giả..."
-                        className="px-4 py-2 w-96 border-none outline-none"
+                        className="px-4 py-2 w-96 border-none outline-none "
                     />
                     <button className="bg-white-500 p-2 text-blue">
                         <Search className="w-5 h-5" />
@@ -41,8 +40,8 @@ const Header = () => {
             </div>
 
             {/* Navigation Bar */}
-            <nav className="bg-gray-900 text-white py-2">
-                <div className="flex justify-center space-x-6">
+            <nav className="bg-blue-900 text-white py-2 ">
+                <div className="flex justify-center space-x-8">
                     <Link href="/main page">
                         <Home className="hover:underline cursor_pointer bg-blue "></Home>
                     </Link>
