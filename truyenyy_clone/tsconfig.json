@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
-    "typeRoots": ["node_modules/@types", "src/types"],  // Sửa lỗi trùng lặp
-    "types": ["node"],
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
+    ], // Sửa lỗi trùng lặp
+    "types": [
+      "node"
+    ],
     "target": "ES2017",
     "lib": [
       "dom",
