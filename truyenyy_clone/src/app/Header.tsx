@@ -5,8 +5,7 @@ import Link from "next/link";
 import { Bell, BookOpen, Mail, Search, Home } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Moon, Sun } from "lucide-react";
-import Cookies from "js-cookie";  // Import js-cookie
+import Cookies from "js-cookie";
 
 const Header = () => {
   const router = useRouter();
@@ -15,8 +14,8 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const token = Cookies.get("token");  // Lấy token từ cookie
-    setIsLoggedIn(!!token);  // Nếu có token thì người dùng đã đăng nhập
+    const token = Cookies.get("token");
+    setIsLoggedIn(!!token);
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -29,10 +28,10 @@ const Header = () => {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const handleLogout = () => {
-    Cookies.remove("token");  // Xóa token khỏi cookie
+    Cookies.remove("token");
     setIsLoggedIn(false);
     setIsDropdownOpen(false);
-    router.push("/");  // Chuyển hướng về trang chủ
+    router.push("/");
   };
 
   return (
@@ -73,7 +72,7 @@ const Header = () => {
             <BookOpen className="w-6 h-6 text-gray-200 hover:text-white" />
           </Link>
 
-          {/* User avatar / login */}
+          {/* User Avatar / Dropdown */}
           {isLoggedIn ? (
             <div className="relative">
               <button onClick={toggleDropdown} className="focus:outline-none">
@@ -97,6 +96,28 @@ const Header = () => {
                         className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-xl"
                       >
                         Trang cá nhân
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          router.push("/insertstory");
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        Đăng truyện
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          router.push("/storymanage");
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        Quản lý truyện
                       </button>
                     </li>
                     <li>
