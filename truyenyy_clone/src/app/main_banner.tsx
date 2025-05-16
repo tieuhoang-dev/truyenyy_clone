@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";  // Import Link từ Next.js
+import API_BASE_URL from "../../config";
 
 type Banner = {
     title: string;
@@ -17,7 +18,7 @@ export default function Main_Banner() {
     useEffect(() => {
         const fetchTopStories = async () => {
             try {
-                const res = await fetch("http://192.168.16.104:8080/stories/ranking?limit=3");
+                const res = await fetch(`${API_BASE_URL}/stories/ranking?limit=3`);
                 const data = await res.json();
 
                 const formatted: Banner[] = data.map((story: any) => ({
@@ -77,7 +78,7 @@ export default function Main_Banner() {
                         <img
                             src={currentBanner.image}
                             alt={currentBanner.title}
-                            className="rounded-lg object-contain"
+                            className="rounded-lg object-contain bottom-[-100px]"
                             style={{
                                 maxWidth: "100%",
                                 maxHeight: "100%",
@@ -86,7 +87,6 @@ export default function Main_Banner() {
                         />
                     )}
 
-                    {/* Tiêu đề và mô tả vẫn giữ nguyên nhưng nằm dưới cùng của banner */}
                     <div className="absolute bottom-[-60px] w-full bg-black bg-opacity-70 text-white p-4">
                         <h2 className="text-xl font-bold">{currentBanner.title}</h2>
                         <p className="text-sm">{currentBanner.description}</p>

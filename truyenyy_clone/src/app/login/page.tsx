@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";  // Thêm js-cookie
+import API_BASE_URL from "../../../config";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function AuthPage() {
     setSuccess("");
 
     const endpoint =
-      mode === "login" ? "http://192.168.16.104:8080/users/auth/login" : "http://192.168.16.104:8080/users/register";
+      mode === "login" ? `${API_BASE_URL}/users/auth/login` : `${API_BASE_URL}/users/register`;
 
     const payload: Record<string, string> = { username, password };
     if (mode === "register") payload.email = email;

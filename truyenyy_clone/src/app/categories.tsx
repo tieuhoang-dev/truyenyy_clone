@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaEllipsisH } from "react-icons/fa";
+import API_BASE_URL from "../../config";
 
 type Genre = {
   _id: string;
@@ -18,7 +19,7 @@ export default function Sidebar() {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const res = await fetch("http://192.168.16.104:8080/stories/genre");
+        const res = await fetch(`${API_BASE_URL}/stories/genre`);
         if (!res.ok) throw new Error("Không thể tải thể loại");
         const data = await res.json();
         setGenres(data);

@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Header from "../../Header";
 import Link from "next/link";
+import API_BASE_URL from "../../../../config";
 
 type Story = {
     _id: string;
@@ -38,7 +39,7 @@ const StoryDetail = () => {
 
         const fetchStory = async () => {
             try {
-                const res = await fetch(`http://192.168.16.104:8080/stories/${storyID}`);
+                const res = await fetch(`${API_BASE_URL}/stories/${storyID}`);
                 if (!res.ok) throw new Error("Không thể lấy dữ liệu truyện");
                 const data = await res.json();
                 setStory(data);
@@ -51,7 +52,7 @@ const StoryDetail = () => {
 
         const fetchChapters = async () => {
             try {
-                const res = await fetch(`http://192.168.16.104:8080/stories/${storyID}/chapters`);
+                const res = await fetch(`${API_BASE_URL}/stories/${storyID}/chapters`);
                 const data = await res.json();
 
                 if (data && Array.isArray(data.chapters)) {

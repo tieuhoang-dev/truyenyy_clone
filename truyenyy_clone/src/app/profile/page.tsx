@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Header from '../Header';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
+import API_BASE_URL from '../../../config'; // Đường dẫn đến file config chứa API_BASE_URL
 
 type User = {
   username: string;
@@ -32,7 +33,7 @@ export default function ProfilePage() {
 
     const fetchData = async () => {
       try {
-        const userRes = await fetch('http://192.168.16.104:8080/users/me', {
+        const userRes = await fetch(`${API_BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${cookieToken}` },
         });
         if (!userRes.ok) throw new Error('Lỗi khi lấy thông tin người dùng');
@@ -48,7 +49,7 @@ export default function ProfilePage() {
           setFormattedDate(dateStr);
         }
 
-        const storyRes = await fetch('http://192.168.16.104:8080/users/stories', {
+        const storyRes = await fetch(`${API_BASE_URL}/users/stories`, {
           headers: { Authorization: `Bearer ${cookieToken}` },
         });
         const storyData = await storyRes.json();

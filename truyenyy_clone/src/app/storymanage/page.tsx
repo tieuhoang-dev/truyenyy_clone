@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
 import Header from '../Header';
+import API_BASE_URL from '../../../config';
 
 type Story = {
     id: string;
@@ -25,7 +26,7 @@ export default function StoryManagePage() {
 
         const fetchStories = async () => {
             try {
-                const response = await fetch('http://192.168.16.104:8080/users/stories', {
+                const response = await fetch(`${API_BASE_URL}/users/stories`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${cookieToken}`,

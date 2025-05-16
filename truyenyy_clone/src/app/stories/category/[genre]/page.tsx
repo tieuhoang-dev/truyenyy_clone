@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '../../../Header';
 import Link from 'next/link';
-
+import API_BASE_URL from '../../../../../config'; // Đường dẫn đến file config chứa API_BASE_URL
+import { useRouter } from 'next/navigation'; // 👈 thêm dòng này
 type Story = {
     id: string;
     title: string;
@@ -24,7 +25,7 @@ export default function GenrePage() {
 
         const fetchStories = async () => {
             try {
-                const res = await fetch(`http://192.168.16.104:8080/stories/genre/${genre}`);
+                const res = await fetch(`${API_BASE_URL}/stories/genre/${genre}`);
                 if (!res.ok) throw new Error('Lỗi khi gọi API');
                 const data = await res.json();
                 setStories(data);

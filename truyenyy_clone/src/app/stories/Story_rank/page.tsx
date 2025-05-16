@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // 👈 thêm dòng này
 import Header from '../../Header';
 import Link from 'next/link';
+import API_BASE_URL from '../../../../config';
 
 type Story = {
     id: string;
@@ -16,12 +17,12 @@ type Story = {
 const TopStories = () => {
     const [stories, setStories] = useState<Story[]>([]);
     const [loading, setLoading] = useState(true);
-    const router = useRouter(); // 👈 thêm dòng này
+    const router = useRouter();
 
     useEffect(() => {
         const fetchTopStories = async () => {
             try {
-                const res = await fetch('http://192.168.16.104:8080/stories/ranking?limit=10');
+                const res = await fetch(`${API_BASE_URL}/stories/ranking?limit=10`);
                 const data = await res.json();
                 setStories(data);
             } catch (error) {

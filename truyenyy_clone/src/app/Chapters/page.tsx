@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '../Header';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
+import API_BASE_URL from '../../../config';
 
 type Chapter = {
     id: string;
@@ -26,8 +28,7 @@ const ChapterDetail = () => {
     const searchParams = useSearchParams();
     const chapterID = searchParams.get('id');
 
-    const hasFetched = useRef(false); // Ref giúp theo dõi việc đã gọi API hay chưa
-
+    const hasFetched = useRef(false);
     const [chapter, setChapter] = useState<Chapter | null>(null);
     const [story, setStory] = useState<Story | null>(null);
     const [previousChapterID, setPreviousChapterID] = useState<string | null>(null);
@@ -36,29 +37,43 @@ const ChapterDetail = () => {
     const [showChapters, setShowChapters] = useState(false);
     const [loading, setLoading] = useState(true);
     const [storyID, setStoryID] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [hasMounted, setHasMounted] = useState(false); // Đảm bảo chỉ chạy sau khi client đã mount
 
-    // Load chương mỗi khi URL thay đổi, nhưng chỉ fetch API 1 lần duy nhất
     useEffect(() => {
-        if (!chapterID || hasFetched.current) return;  // Kiểm tra nếu API đã được gọi
+        setHasMounted(true); // Đánh dấu đã mount
+    }, []);
 
-        hasFetched.current = true;  // Đánh dấu là đã gọi API
+    useEffect(() => {
+        if (hasMounted) { // Kiểm tra xem component đã mount hay chưa
+            const token = Cookies.get('token');
+            if (!token) {
+                router.push('/login');
+            }
+        }
+    }, [hasMounted, router]);
+
+    useEffect(() => {
+        if (!chapterID || hasFetched.current || !hasMounted) return;
+
+        hasFetched.current = true;
 
         const fetchData = async () => {
             setLoading(true);
 
             try {
-                const chapterRes = await fetch(`http://192.168.16.104:8080/stories/chapters/id/${chapterID}`);
+                const chapterRes = await fetch(`${API_BASE_URL}/stories/chapters/id/${chapterID}`);
                 const chapterJson = await chapterRes.json();
                 const chapterData = chapterJson.chapter;
                 setChapter(chapterData);
                 setPreviousChapterID(chapterJson.previous?.id || null);
                 setNextChapterID(chapterJson.next?.id || null);
-                setStoryID(chapterData.story_id); // Lưu ID truyện để sử dụng sau này
-                const storyRes = await fetch(`http://192.168.16.104:8080/stories/${chapterData.story_id}`);
+                setStoryID(chapterData.story_id);
+                const storyRes = await fetch(`${API_BASE_URL}/stories/${chapterData.story_id}`);
                 const storyData = await storyRes.json();
                 setStory(storyData);
 
-                const chaptersRes = await fetch(`http://192.168.16.104:8080/stories/${chapterData.story_id}/chapters`);
+                const chaptersRes = await fetch(`${API_BASE_URL}/stories/${chapterData.story_id}/chapters`);
                 const chaptersJson = await chaptersRes.json();
                 setChapters(chaptersJson.chapters);
             } catch (error) {
@@ -71,12 +86,60 @@ const ChapterDetail = () => {
         };
 
         fetchData();
-    }, [chapterID]); // Chỉ chạy lại khi `chapterID` thay đổi
+    }, [chapterID, hasMounted]);
 
     const handleChangeChapter = (newId: string) => {
-        hasFetched.current = false;  // Đánh dấu lại là chưa gọi API để tránh gọi lại lần sau
+        hasFetched.current = false;
         router.push(`/Chapters?id=${newId}`);
     };
+
+    const handleClick = async () => {
+        setLoading(true);
+        setError(null);
+
+        const token = Cookies.get('token');
+        if (!token) {
+            setError('Không tìm thấy token, vui lòng đăng nhập lại.');
+            setLoading(false);
+            return;
+        }
+
+        if (!storyID || !chapterID || !chapter?.chapter_number) {
+            setError('Dữ liệu chưa sẵn sàng, vui lòng thử lại sau.');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/bookshelf`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    story_id: storyID,
+                    last_chapter_id: chapterID,
+                    chapter_number: chapter.chapter_number,
+                    chapter_id: chapterID,
+                }),
+            });
+
+            if (!response.ok) {
+                const resData = await response.json();
+                setError(resData.error || 'Cập nhật tủ sách thất bại.');
+                return;
+            }
+
+            console.log("Cập nhật hoặc thêm vào tủ sách thành công");
+        } catch (error) {
+            console.error('Lỗi tải dữ liệu:', error);
+            setError('Có lỗi xảy ra, vui lòng thử lại!');
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     if (loading) return <div className="text-center py-10">Đang tải chương...</div>;
     if (!chapter || !story) return <div className="text-center py-10 text-red-500">Không tìm thấy chương.</div>;
@@ -121,7 +184,9 @@ const ChapterDetail = () => {
                     >
                         📋 Mục lục
                     </button>
-                    <button className="border px-4 py-1 rounded hover:bg-gray-200 text-sm">🔖 Đánh dấu</button>
+                    <button className="border px-4 py-1 rounded hover:bg-gray-200 text-sm"
+                        onClick={() => handleClick()}
+                    >🔖 Đánh dấu</button>
                 </div>
             </div>
 

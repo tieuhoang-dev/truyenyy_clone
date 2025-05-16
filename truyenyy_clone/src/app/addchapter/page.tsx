@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Header from '../Header';
+import API_BASE_URL from '../../../config';
 
 export default function AddChapterPage() {
     const searchParams = useSearchParams();
@@ -39,7 +40,7 @@ export default function AddChapterPage() {
         setError(null);
 
         try {
-            const response = await fetch('http://192.168.16.104:8080/stories/chapters', {
+            const response = await fetch(`${API_BASE_URL}/stories/chapters`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

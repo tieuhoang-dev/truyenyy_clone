@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Header from "../../Header";
+import API_BASE_URL from "../../../../config"; // Đường dẫn đến file config chứa API_BASE_URL
 
 type Story = {
     id: string;
@@ -21,7 +22,7 @@ const SearchPage = () => {
     const fetchData = async () => {
         try {
             const res = await fetch(
-                `http://192.168.16.104:8080/stories/search?name=${encodeURIComponent(name || "")}`,
+                `${API_BASE_URL}/stories/search?name=${encodeURIComponent(name || "")}`,
             );
 
             if (!res.ok) {

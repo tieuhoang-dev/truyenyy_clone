@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '../Header';
 import Cookies from 'js-cookie';
+import API_BASE_URL from '../../../config';
 
 export default function InsertStoryPage() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function InsertStoryPage() {
         return;
       }
 
-      const response = await fetch('http://192.168.16.104:8080/stories', {
+      const response = await fetch(`${API_BASE_URL}/stories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, BookOpen, Mail, Search, Home } from "lucide-react";
+import { Bell, BookOpen, Mail, Search, Home, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
@@ -12,10 +12,18 @@ const Header = () => {
   const [query, setQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // Check token & theme
   useEffect(() => {
     const token = Cookies.get("token");
     setIsLoggedIn(!!token);
+
+    const theme = localStorage.getItem("theme");
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      setIsDarkMode(true);
+    }
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -34,9 +42,21 @@ const Header = () => {
     router.push("/");
   };
 
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    if (newTheme) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
+
   return (
     <header className="bg-blue shadow-md">
-      <div className="flex items-center justify-between px-6 py-3 bg-[url('/bg.jpg')]">
+      <div className="flex items-center justify-between px-6 py-3 bg-[url('/bg.jpg')] dark:bg-gray-800">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <Image src="/logo.jpg" alt="TruyenYY" width={40} height={40} />
@@ -62,6 +82,14 @@ const Header = () => {
 
         {/* Icons */}
         <div className="flex items-center space-x-4">
+          <button
+            onClick={toggleTheme}
+            className="text-white hover:text-yellow-300 transition-colors"
+            title="Chuyển chế độ sáng/tối"
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+
           <Link href="/home">
             <Mail className="w-6 h-6 text-gray-200 hover:text-white" />
           </Link>
@@ -72,7 +100,7 @@ const Header = () => {
             <BookOpen className="w-6 h-6 text-gray-200 hover:text-white" />
           </Link>
 
-          {/* User Avatar / Dropdown */}
+          {/* User */}
           {isLoggedIn ? (
             <div className="relative">
               <button onClick={toggleDropdown} className="focus:outline-none">
@@ -122,6 +150,18 @@ const Header = () => {
                     </li>
                     <li>
                       <button
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          router.push("/bookshelf");
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        Tủ sách
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-xl"
                       >
@@ -138,7 +178,7 @@ const Header = () => {
                 Đăng nhập
               </Link>
               <span>|</span>
-              <Link href="/register" className="hover:underline">
+              <Link href="/login" className="hover:underline">
                 Đăng ký
               </Link>
             </div>
@@ -167,7 +207,10 @@ const Header = () => {
           <Link className="hover:underline cursor-pointer" href="/trans">
             Truyện Dịch
           </Link>
-          <Link className="hover:underline cursor-pointer flex items-center" href="/forum">
+          <Link
+            className="hover:underline cursor-pointer flex items-center"
+            href="/forum"
+          >
             Diễn Đàn
             <span className="bg-green-500 text-xs ml-1 px-1 py-0.5 rounded-full">
               99+

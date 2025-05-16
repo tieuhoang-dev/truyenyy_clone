@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import API_BASE_URL from "../../../../config";
 
 type Chapter = {
     id: string;
@@ -28,7 +29,7 @@ const ChapterListPage = () => {
             if (!storyId) return;
             setLoading(true);
             try {
-                const res = await fetch(`http://192.168.16.104:8080/stories/${storyId}/chapters`);
+                const res = await fetch(`${API_BASE_URL}/stories/${storyId}/chapters`);
                 const data = await res.json();
                 setChapters(data.chapters || []);
             } catch (err) {
@@ -40,7 +41,7 @@ const ChapterListPage = () => {
 
         const fetchStoryTitle = async () => {
             try {
-                const res = await fetch(`http://192.168.16.104:8080/stories/${storyId}`);
+                const res = await fetch(`${API_BASE_URL}/stories/${storyId}`);
                 const data = await res.json();
                 setStoryTitle(data.title || "");
             } catch (err) {
