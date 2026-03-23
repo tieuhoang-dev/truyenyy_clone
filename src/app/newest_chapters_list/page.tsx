@@ -4,21 +4,16 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Eye, Bookmark } from "lucide-react";
+import { Eye } from "lucide-react";
 
 type Story = {
     id: string;
     title: string;
     view_count: number;
     updated_at: string;
+    created_at?: string;
     cover_url?: string;
-    latest_chapter?: {
-        id: string;
-        chapter_number: number;
-        created_at: string;
-        views?: number;
-        comments?: number;
-    };
+    chapters_count?: number;
 };
 
 const NewestChaptersList = () => {
@@ -61,7 +56,6 @@ const NewestChaptersList = () => {
             <h2 className="text-xl font-semibold mb-4">📚 Truyện mới cập nhật</h2>
             <div className="space-y-4">
                 {stories.map((story, index) => {
-                    const chap = story.latest_chapter;
                     const handleClick = () => {
                         router.push(`/stories/Content?id=${story.id}`);
                     };
@@ -85,29 +79,24 @@ const NewestChaptersList = () => {
                             <div className="flex-1 flex flex-col justify-between">
                                 <div>
                                     <h3 className="text-lg font-bold">{story.title}</h3>
-                                    {chap ? (
+                                    {story.chapters_count && story.chapters_count > 0 ? (
                                         <Link
-                                            href={`/Chapters?id=${chap.id}`}
+                                            href={`/Chapters/list?id=${story.id}`}
                                             className="text-sm text-gray-300 hover:text-gray-100 transition underline"
                                             onClick={(e) => e.stopPropagation()} // Không để lan click ra ngoài
                                         >
-                                            Chapter {chap.chapter_number}
+                                            Chương {story.chapters_count}
                                         </Link>
                                     ) : (
                                         <p className="text-sm text-gray-400">Chưa có chương</p>
                                     )}
                                 </div>
-                                {chap && (
-                                    <div className="flex items-center text-xs text-gray-400 mt-2 gap-4">
-                                        <div className="flex items-center gap-1">
-                                            <Bookmark size={14} /> {chap.comments ?? 0}
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <Eye size={14} /> {(story.view_count ?? 0).toLocaleString()}
-                                        </div>
-                                        <div className="ml-auto">{timeAgo(chap.created_at)}</div>
+                                <div className="flex items-center text-xs text-gray-400 mt-2 gap-4">
+                                    <div className="flex items-center gap-1">
+                                        <Eye size={14} /> {(story.view_count ?? 0).toLocaleString()} lượt xem
                                     </div>
-                                )}
+                                    <div className="ml-auto">{timeAgo(story.updated_at || story.created_at || new Date().toISOString())}</div>
+                                </div>
                             </div>
                         </motion.div>
                     );
@@ -125,8 +114,8 @@ const NewestChaptersList = () => {
                                 window.scrollTo({ top: 0, behavior: "smooth" }); // Tự cuộn lên đầu khi chuyển trang
                             }}
                             className={`px-3 py-1 rounded-md text-sm font-semibold transition ${currentPage === page
-                                    ? "bg-blue-600 text-white shadow-md"
-                                    : "bg-[#1a1f2e] text-gray-400 hover:bg-[#2a3044] hover:text-white"
+                                ? "bg-blue-600 text-white shadow-md"
+                                : "bg-[#1a1f2e] text-gray-400 hover:bg-[#2a3044] hover:text-white"
                                 }`}
                         >
                             {page}
