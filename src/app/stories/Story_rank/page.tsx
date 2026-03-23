@@ -49,7 +49,7 @@ const TopStories = () => {
                             {story.cover_url && (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                    src={story.cover_url}
+                                    src={story.cover_url ? process.env.NEXT_PUBLIC_API_BASE_URL + story.cover_url : "/placeholder.png"}
                                     alt={story.title}
                                     className="w-16 h-20 object-cover rounded mr-4"
                                 />
