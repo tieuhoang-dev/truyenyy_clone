@@ -14,6 +14,8 @@ type Story = {
     created_at?: string;
     cover_url?: string;
     chapters_count?: number;
+    latest_chapter_id?: string;
+    latest_chapter_title?: string;
 };
 
 const NewestChaptersList = () => {
@@ -32,13 +34,23 @@ const NewestChaptersList = () => {
                 if (!res.ok) throw new Error("Lỗi khi gọi API");
                 const data = await res.json();
 
+                let fetchedStories: Story[] = [];
+
                 if (data && data.stories) {
-                    setStories(data.stories);
+                    fetchedStories = data.stories;
                     // Tính tổng số trang (số truyện / 10)
                     setTotalPages(Math.ceil(data.total / data.limit));
                 } else if (Array.isArray(data)) { // Fallback nếu API vẫn trả thẳng array
-                    setStories(data);
+                    fetchedStories = data;
                 }
+
+                const sortedStories = fetchedStories.sort((a, b) => {
+                    const timeA = new Date(a.updated_at || a.created_at || 0).getTime();
+                    const timeB = new Date(b.updated_at || b.created_at || 0).getTime();
+                    return timeB - timeA;
+                });
+
+                setStories(sortedStories);
             } catch (err) {
                 console.error("❌", err);
             } finally {
@@ -76,16 +88,16 @@ const NewestChaptersList = () => {
                                 alt={story.title}
                                 className="w-16 h-24 object-cover rounded mr-4"
                             />
-                            <div className="flex-1 flex flex-col justify-between">
+                            <div className="flex-1 flex flex-col justify-between min-w-0">
                                 <div>
-                                    <h3 className="text-lg font-bold">{story.title}</h3>
+                                    <h3 className="text-lg font-bold truncate">{story.title}</h3>
                                     {story.chapters_count && story.chapters_count > 0 ? (
                                         <Link
-                                            href={`/Chapters/list?id=${story.id}`}
-                                            className="text-sm text-gray-300 hover:text-gray-100 transition underline"
-                                            onClick={(e) => e.stopPropagation()} // Không để lan click ra ngoài
+                                            href={story.latest_chapter_id ? `/Chapters?id=${story.latest_chapter_id}` : `/Chapters/list?id=${story.id}`}
+                                            className="text-sm text-gray-300 hover:text-gray-100 transition underline truncate block"
+                                            onClick={(e) => e.stopPropagation()}
                                         >
-                                            Chương {story.chapters_count}
+                                            Chương {story.chapters_count}{story.latest_chapter_title ? `: ${story.latest_chapter_title}` : ""}
                                         </Link>
                                     ) : (
                                         <p className="text-sm text-gray-400">Chưa có chương</p>
