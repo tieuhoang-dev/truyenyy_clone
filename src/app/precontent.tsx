@@ -3,10 +3,10 @@ import Main_Banner from "./main_banner";
 
 export default function HomePage() {
     return (
-        <div className="grid grid-cols-14 gap-4 p-4">
+        <div className="grid grid-cols-10 gap-4 p-4">
             <div className="col-span-2"><Sidebar /></div>
 
-            <main className="col-span-10 flex flex-col w-full h-full">
+            <main className="col-span-6 flex flex-col w-full h-full">
                 <Main_Banner />
             </main>
 

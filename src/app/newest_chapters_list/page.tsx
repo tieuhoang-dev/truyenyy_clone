@@ -24,16 +24,26 @@ type Story = {
 const NewestChaptersList = () => {
     const [stories, setStories] = useState<Story[]>([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const router = useRouter();
 
     useEffect(() => {
         const fetchStories = async () => {
+            setLoading(true);
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/stories/newest?limit=10`);
+                // Gửi request kèm theo params page và limit lên Backend
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/stories?page=${currentPage}&limit=10`);
                 if (!res.ok) throw new Error("Lỗi khi gọi API");
                 const data = await res.json();
-                if (!Array.isArray(data)) throw new Error("Dữ liệu sai định dạng");
-                setStories(data);
+
+                if (data && data.stories) {
+                    setStories(data.stories);
+                    // Tính tổng số trang (số truyện / 10)
+                    setTotalPages(Math.ceil(data.total / data.limit));
+                } else if (Array.isArray(data)) { // Fallback nếu API vẫn trả thẳng array
+                    setStories(data);
+                }
             } catch (err) {
                 console.error("❌", err);
             } finally {
@@ -42,7 +52,7 @@ const NewestChaptersList = () => {
         };
 
         fetchStories();
-    }, []);
+    }, [currentPage]);
 
     if (loading) return <div className="text-center py-4">⏳ Đang tải...</div>;
 
@@ -103,6 +113,27 @@ const NewestChaptersList = () => {
                     );
                 })}
             </div>
+
+            {/* Phân trang đánh số từ 1 -> số truyện / 10 */}
+            {totalPages > 1 && (
+                <div className="flex flex-wrap justify-center mt-6 gap-2">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                            key={page}
+                            onClick={() => {
+                                setCurrentPage(page);
+                                window.scrollTo({ top: 0, behavior: "smooth" }); // Tự cuộn lên đầu khi chuyển trang
+                            }}
+                            className={`px-3 py-1 rounded-md text-sm font-semibold transition ${currentPage === page
+                                    ? "bg-blue-600 text-white shadow-md"
+                                    : "bg-[#1a1f2e] text-gray-400 hover:bg-[#2a3044] hover:text-white"
+                                }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
